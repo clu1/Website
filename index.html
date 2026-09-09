@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes</title>
+<meta name="description" content="A blog that reads like an inbox.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;450;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<script src="posts.js"></script>
+
+<style>
+:root{
+  --paper:#F2F1EC;
+  --rail:#E7E5DC;
+  --line:#D6D3C8;
+  --line-soft:#E0DDD3;
+  --ink:#1E2019;
+  --muted:#6E7167;
+  --faint:#8E9086;
+  --signal:#2F5D50;
+  --select:#E1E6DE;
+  --star:#B7862F;
+  --ui:"IBM Plex Sans",system-ui,sans-serif;
+  --read:"Newsreader",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--ui);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:3px}
+svg{display:block}
+
+.app{display:grid;grid-template-columns:210px 356px minmax(0,1fr);height:100dvh}
+
+/* ─────────── rail ─────────── */
+.rail{
+  background:var(--rail);border-right:1px solid var(--line);
+  padding:20px 12px;display:flex;flex-direction:column;gap:20px;overflow:auto;
+}
+.brand{display:flex;gap:10px;align-items:center;padding:0 8px}
+.brand .name{font-size:14.5px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.brand .tag{font-size:12px;color:var(--muted);line-height:1.3;margin-top:1px}
+.avatar{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  background:var(--signal);color:#F2F1EC;
+  display:grid;place-items:center;font-size:12px;font-weight:600;letter-spacing:.02em;
+}
+.avatar.sm{width:26px;height:26px;font-size:10.5px}
+.compose{
+  display:flex;align-items:center;gap:8px;justify-content:center;
+  background:var(--signal);color:#F4F3EE;border-radius:6px;
+  padding:9px 12px;font-size:13.5px;font-weight:500;text-decoration:none;
+}
+.compose:hover{background:#26493F}
+.folders{display:flex;flex-direction:column;gap:1px}
+.folder{
+  display:flex;align-items:center;gap:9px;
+  padding:6px 9px;border-radius:5px;font-size:14px;text-align:left;width:100%;
+}
+.folder span.label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.folder:hover{background:rgba(0,0,0,.045)}
+.folder[aria-current="true"]{background:var(--select);font-weight:500}
+.folder .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.folder .ico{color:var(--faint);flex:none}
+.folder[aria-current="true"] .ico{color:var(--signal)}
+.rail-foot{margin-top:auto;padding:0 9px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+.rail-foot a{color:var(--muted)}
+.rail-foot button{color:var(--muted);font-size:12.5px;text-decoration:underline;text-underline-offset:2px}
+
+/* ─────────── list ─────────── */
+.list{border-right:1px solid var(--line);overflow:auto;display:flex;flex-direction:column}
+.list-head{position:sticky;top:0;z-index:2;background:var(--paper);border-bottom:1px solid var(--line);padding:16px 16px 12px}
+.list-head .row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.list-head h1{font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+.list-head .count{font-size:12px;color:var(--muted)}
+.search{display:flex;align-items:center;gap:7px;background:var(--rail);border:1px solid var(--line);border-radius:6px;padding:6px 9px}
+.search input{border:0;background:none;font:inherit;font-size:13.5px;width:100%;color:var(--ink)}
+.search input:focus{outline:none}
+.search input::placeholder{color:var(--faint)}
+.search .ico{color:var(--faint);flex:none}
+.search button{color:var(--faint);display:none}
+.search.has-value button{display:block}
+
+.group{
+  padding:9px 16px 5px;font-size:11.5px;color:var(--faint);font-weight:500;
+  background:var(--paper);border-bottom:1px solid var(--line-soft);
+}
+.note{
+  display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;
+  width:100%;text-align:left;padding:12px 14px;
+  border-bottom:1px solid var(--line-soft);border-left:2px solid transparent;
+}
+.note:hover{background:rgba(0,0,0,.03)}
+.note[aria-current="true"]{background:var(--select);border-left-color:var(--signal)}
+.note .mid{min-width:0}
+.note .top{display:flex;align-items:center;gap:7px}
+.note .from{font-size:13px;color:var(--muted);font-weight:500}
+.note .subject{font-size:14.5px;font-weight:500;letter-spacing:-.005em;margin-top:1px;display:block}
+.note .preview{font-size:13px;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note .right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+.note .date{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.note .star{color:transparent}
+.note:hover .star{color:var(--faint)}
+.note .star.on,.note:hover .star.on{color:var(--star)}
+.note.read .subject{font-weight:400;color:#3A3D35}
+.note.read .avatar{background:#B8BAB1;color:#F2F1EC}
+.unread-dot{width:6px;height:6px;border-radius:50%;background:var(--signal);flex:none}
+.note.read .unread-dot{background:transparent}
+.list-empty{padding:44px 20px;color:var(--muted);font-size:14px;text-align:center}
+mark{background:#DCE7C8;color:inherit;border-radius:2px}
+
+/* ─────────── reading pane ─────────── */
+.pane{overflow:auto;position:relative}
+.toolbar{
+  position:sticky;top:0;z-index:2;background:var(--paper);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:2px;padding:9px 14px;
+}
+.tool{padding:6px;border-radius:5px;color:var(--muted);display:grid;place-items:center}
+.tool:hover{background:rgba(0,0,0,.055);color:var(--ink)}
+.tool.on{color:var(--star)}
+.tool[disabled]{opacity:.3;cursor:default}
+.toolbar .spacer{flex:1}
+.toolbar .pos{font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums;padding-right:4px}
+.pane-inner{max-width:64ch;padding:44px 44px 40px}
+.meta{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:30px}
+.meta h2{font-family:var(--read);font-size:31px;line-height:1.18;font-weight:500;letter-spacing:-.012em}
+.meta .byline{display:flex;align-items:center;gap:9px;margin-top:16px}
+.meta .who{font-size:13.5px;font-weight:500}
+.meta .when{font-size:12.5px;color:var(--muted);margin-top:1px}
+.body{font-family:var(--read);font-size:18px;line-height:1.65}
+.body p{margin-bottom:1.1em}
+.body h3{font-family:var(--ui);font-size:14px;font-weight:600;margin:2em 0 .55em;letter-spacing:-.005em}
+.body blockquote{border-left:2px solid var(--line);padding-left:16px;color:var(--muted);font-style:italic;margin-bottom:1.1em}
+.body ul{margin:0 0 1.1em 1.1em}
+.body li{margin-bottom:.35em}
+.body a{color:var(--signal)}
+.body hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+.body code{font-family:ui-monospace,monospace;font-size:.88em;background:var(--rail);padding:1px 5px;border-radius:4px}
+.reply{max-width:64ch;margin:0 44px 90px;border-top:1px solid var(--line);padding-top:22px;display:flex;gap:12px;align-items:center}
+.reply p{font-size:13.5px;color:var(--muted);flex:1}
+.reply a{
+  background:var(--rail);border:1px solid var(--line);border-radius:6px;
+  padding:8px 14px;font-size:13.5px;text-decoration:none;color:var(--ink);white-space:nowrap;
+}
+.reply a:hover{background:var(--select)}
+.empty{height:100%;display:flex;flex-direction:column;justify-content:center;padding:44px;color:var(--muted);max-width:46ch}
+.empty strong{display:block;color:var(--ink);font-weight:500;margin-bottom:6px;font-size:16px}
+kbd{font:inherit;font-size:12px;background:var(--rail);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+
+/* ─────────── shortcuts sheet ─────────── */
+.sheet{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:rgba(30,32,25,.28)}
+.sheet.open{display:grid}
+.sheet-card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:24px 26px;width:min(340px,90vw)}
+.sheet-card h3{font-size:15px;font-weight:600;margin-bottom:14px}
+.sheet-card dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:13.5px;align-items:center}
+.sheet-card dd{color:var(--muted)}
+
+/* ─────────── responsive ─────────── */
+.back{display:none}
+@media (max-width:920px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+  .rail{flex-direction:row;align-items:center;gap:6px;border-right:0;border-bottom:1px solid var(--line);padding:10px 12px;overflow-x:auto}
+  .brand{padding:0 8px 0 2px}
+  .brand .tag,.brand .avatar{display:none}
+  .compose{order:9;padding:7px 11px;font-size:13px}
+  .compose span{display:none}
+  .folders{flex-direction:row;gap:5px}
+  .folder{width:auto;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+  .folder .n,.folder .ico{display:none}
+  .rail-foot{display:none}
+  .list{border-right:0}
+  .pane{display:none}
+  .app.reading .list{display:none}
+  .app.reading .pane{display:block}
+  .pane-inner{padding:22px 20px 32px}
+  .reply{margin:0 20px 80px}
+  .meta h2{font-size:26px}
+  .body{font-size:17px}
+  .back{display:grid}
+}
+@media (prefers-reduced-motion:no-preference){
+  .note,.folder,.tool{transition:background-color .12s ease,color .12s ease}
+}
+</style>
+
+<div class="app" id="app">
+  <aside class="rail">
+    <div class="brand">
+      <div class="avatar" id="brandAvatar"></div>
+      <div><div class="name" id="brandName"></div><div class="tag" id="brandTag"></div></div>
+    </div>
+    <a class="compose" id="compose" href="#"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M2 13.5V11L11 2l3 3-9 9H2z"/></svg><span>Say hello</span></a>
+    <nav class="folders" id="folders" aria-label="Mailboxes"></nav>
+    <div class="rail-foot" id="railFoot"></div>
+  </aside>
+
+  <section class="list" aria-label="Notes">
+    <div class="list-head">
+      <div class="row"><h1 id="listTitle">Inbox</h1><span class="count" id="listCount"></span></div>
+      <div class="search" id="searchBox">
+        <svg class="ico" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input id="search" type="search" placeholder="Search notes" aria-label="Search notes">
+        <button id="clearSearch" aria-label="Clear search"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+    </div>
+    <div id="notes"></div>
+  </section>
+
+  <main class="pane" id="pane" aria-live="polite"></main>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-label="Keyboard shortcuts">
+  <div class="sheet-card">
+    <h3>Keyboard</h3>
+    <dl>
+      <dt><kbd>J</kbd> <kbd>K</kbd></dt><dd>Next / previous note</dd>
+      <dt><kbd>S</kbd></dt><dd>Star this note</dd>
+      <dt><kbd>U</kbd></dt><dd>Mark unread</dd>
+      <dt><kbd>/</kbd></dt><dd>Search</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Back to the list</dd>
+      <dt><kbd>?</kbd></dt><dd>This panel</dd>
+    </dl>
+  </div>
+</div>
+
+<script>
+/* ═══════════ guard: posts.js must load first ═══════════ */
+if (typeof NOTES === 'undefined' || typeof AUTHOR === 'undefined'){
+  document.body.innerHTML =
+    '<div style="max-width:34em;margin:14vh auto;padding:0 24px;font:15px/1.6 system-ui">' +
+    '<h1 style="font-size:19px;margin-bottom:12px">posts.js didn\'t load</h1>' +
+    '<p style="margin-bottom:10px">This page needs <code>posts.js</code> sitting in the same ' +
+    'folder as <code>index.html</code>. Two usual causes:</p>' +
+    '<ul style="margin:0 0 14px 1.2em"><li>The two files got separated.</li>' +
+    '<li>There is a typo in <code>posts.js</code> — open the browser console to see it.</li></ul>' +
+    '<p>Keep both files together and reload.</p></div>';
+  throw new Error('posts.js not loaded');
+}
+
+/* ═══════════ storage (falls back to memory if blocked) ═══════════ */
+const store = (() => {
+  try {
+    localStorage.setItem('_t','1'); localStorage.removeItem('_t');
+    return { get: k => JSON.parse(localStorage.getItem(k) || '[]'),
+             set: (k,v) => localStorage.setItem(k, JSON.stringify(v)) };
+  } catch { const m = {}; return { get: k => m[k] || [], set: (k,v) => m[k] = v }; }
+})();
+
+/* ═══════════ tiny markdown ═══════════ */
+function md(src){
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const inline = s => esc(s.trim())
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>');
+  return src.trim().split(/\n\s*\n/).map(block => {
+    const lines = block.trim().split('\n');
+    if (/^---+$/.test(lines[0])) return '<hr>';
+    if (lines[0].startsWith('## ')) return `<h3>${inline(lines[0].slice(3))}</h3>`;
+    if (lines.every(l => l.startsWith('> ')))
+      return `<blockquote>${inline(lines.map(l => l.slice(2)).join(' '))}</blockquote>`;
+    if (lines.every(l => l.startsWith('- ')))
+      return `<ul>${lines.map(l => `<li>${inline(l.slice(2))}</li>`).join('')}</ul>`;
+    return `<p>${inline(lines.join(' '))}</p>`;
+  }).join('');
+}
+
+/* ═══════════ derived fields ═══════════ */
+const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const initials = n => n.trim().split(/\s+/).slice(0,2).map(w => w[0]).join('').toUpperCase();
+const plain = b => b.replace(/^[#>\-\s]+/gm,'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1')
+                    .replace(/[*_`]/g,'').replace(/\s+/g,' ').trim();
+
+const POSTS = NOTES.map(n => ({
+  ...n,
+  slug: n.slug || slugify(n.subject),
+  from: n.from || AUTHOR.name,
+  text: plain(n.body),
+  preview: n.preview || plain(n.body).slice(0, 180),
+  html: md(n.body),
+  when: new Date(n.date + 'T12:00')
+})).sort((a,b) => b.when - a.when);
+
+/* ═══════════ state ═══════════ */
+const readSet = new Set(store.get('notes:read'));
+const starSet = new Set(store.get('notes:starred'));
+const TOPICS = [...new Set(POSTS.map(p => p.folder))];
+let folder = 'Inbox', query = '', current = null;
+
+const save = () => { store.set('notes:read', [...readSet]); store.set('notes:starred', [...starSet]); };
+
+function inFolder(f){
+  return f === 'Inbox' ? POSTS
+       : f === 'Starred' ? POSTS.filter(p => starSet.has(p.slug))
+       : POSTS.filter(p => p.folder === f);
+}
+function visible(){
+  let out = inFolder(folder);
+  if (query){
+    const q = query.toLowerCase();
+    out = out.filter(p => (p.subject + ' ' + p.text + ' ' + p.folder).toLowerCase().includes(q));
+  }
+  return out;
+}
+const unread = f => inFolder(f).filter(p => !readSet.has(p.slug)).length;
+
+function groupOf(d){
+  const days = (Date.now() - d) / 864e5;
+  if (days < 7) return 'This week';
+  if (days < 31) return 'This month';
+  return d.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+}
+const shortDate = d => (Date.now() - d) / 864e5 < 300
+  ? d.toLocaleDateString('en-US', { month:'short', day:'numeric' })
+  : d.toLocaleDateString('en-US', { month:'numeric', day:'numeric', year:'2-digit' });
+
+function hl(str){
+  if (!query) return str;
+  const i = str.toLowerCase().indexOf(query.toLowerCase());
+  if (i < 0) return str;
+  return str.slice(0,i) + '<mark>' + str.slice(i, i + query.length) + '</mark>' + str.slice(i + query.length);
+}
+
+/* ═══════════ icons ═══════════ */
+const ico = {
+  inbox:'<path d="M2 9.5h3.5l1 2h3l1-2H14M2 9.5L3.8 3.2A1 1 0 014.8 2.5h6.4a1 1 0 011 .7L14 9.5v3a1 1 0 01-1 1H3a1 1 0 01-1-1v-3z"/>',
+  star:'<path d="M8 2.2l1.7 3.6 3.9.5-2.9 2.7.8 3.9L8 11l-3.5 1.9.8-3.9L2.4 6.3l3.9-.5L8 2.2z"/>',
+  folder:'<path d="M2 4.5a1 1 0 011-1h3l1.3 1.6H13a1 1 0 011 1v6.4a1 1 0 01-1 1H3a1 1 0 01-1-1v-8z"/>',
+  up:'<path d="M4 10l4-4 4 4"/>', down:'<path d="M4 6l4 4 4-4"/>',
+  back:'<path d="M9.5 3.5L5 8l4.5 4.5"/>',
+  link:'<path d="M6.8 9.2a2.6 2.6 0 003.9.3l1.9-1.9a2.6 2.6 0 00-3.7-3.7l-1 1"/><path d="M9.2 6.8a2.6 2.6 0 00-3.9-.3L3.4 8.4a2.6 2.6 0 003.7 3.7l1-1"/>',
+  mail:'<rect x="2" y="3.5" width="12" height="9" rx="1"/><path d="M2.5 4.5L8 8.7l5.5-4.2"/>'
+};
+const svg = (d, fill) => `<svg width="15" height="15" viewBox="0 0 16 16" fill="${fill || 'none'}" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+
+/* ═══════════ render ═══════════ */
+const $ = id => document.getElementById(id);
+const app = $('app'), foldersEl = $('folders'), notesEl = $('notes'), paneEl = $('pane');
+
+function renderChrome(){
+  $('brandAvatar').textContent = initials(AUTHOR.name);
+  $('brandName').textContent = AUTHOR.name;
+  $('brandTag').textContent = AUTHOR.tagline;
+  $('compose').href = `mailto:${AUTHOR.email}?subject=${encodeURIComponent('Hello from your site')}`;
+  $('railFoot').innerHTML = AUTHOR.links.map(l => `<a href="${l.href}">${l.label}</a>`).join('')
+    + `<button id="markAll">Mark all read</button>`;
+  $('markAll').onclick = () => { POSTS.forEach(p => readSet.add(p.slug)); save(); renderFolders(); renderList(); };
+}
+
+function renderFolders(){
+  const rows = [
+    { name:'Inbox', icon:ico.inbox }, { name:'Starred', icon:ico.star },
+    ...TOPICS.map(t => ({ name:t, icon:ico.folder }))
+  ];
+  foldersEl.innerHTML = rows.map(r => `
+    <button class="folder" data-folder="${r.name}" aria-current="${r.name === folder}">
+      <span class="ico">${svg(r.icon)}</span><span class="label">${r.name}</span>
+      <span class="n">${unread(r.name) || ''}</span>
+    </button>`).join('');
+  const total = unread('Inbox');
+  document.title = (total ? `(${total}) ` : '') + AUTHOR.name;
+}
+
+function renderList(){
+  const items = visible();
+  $('listTitle').textContent = query ? 'Search' : folder;
+  $('listCount').textContent = `${items.length} ${items.length === 1 ? 'note' : 'notes'}`;
+  $('searchBox').classList.toggle('has-value', !!query);
+
+  if (!items.length){
+    notesEl.innerHTML = `<p class="list-empty">${query
+      ? `Nothing matches “${query}”.`
+      : folder === 'Starred'
+        ? 'No starred notes yet. Press S on one worth keeping.'
+        : 'This folder is empty.'}</p>`;
+    return;
+  }
+  let group = '', html = '';
+  for (const p of items){
+    const g = query ? '' : groupOf(p.when);
+    if (g && g !== group){ group = g; html += `<div class="group">${g}</div>`; }
+    html += `<button class="note ${readSet.has(p.slug) ? 'read' : ''}" data-slug="${p.slug}" aria-current="${current === p.slug}">
+      <span class="avatar sm">${initials(p.from)}</span>
+      <span class="mid">
+        <span class="top"><span class="unread-dot"></span><span class="from">${p.from}</span></span>
+        <span class="subject">${hl(p.subject)}</span>
+        <span class="preview">${hl(p.preview)}…</span>
+      </span>
+      <span class="right">
+        <span class="date">${shortDate(p.when)}</span>
+        <span class="star ${starSet.has(p.slug) ? 'on' : ''}" data-star="${p.slug}">${svg(ico.star, starSet.has(p.slug) ? 'currentColor' : 'none')}</span>
+      </span>
+    </button>`;
+  }
+  notesEl.innerHTML = html;
+}
+
+function renderPane(){
+  const p = POSTS.find(x => x.slug === current);
+  if (!p){
+    paneEl.innerHTML = `<div class="empty"><strong>You're all caught up.</strong>
+      Pick a note from the list, or press <kbd>J</kbd> to start at the top. <kbd>?</kbd> shows the rest.</div>`;
+    app.classList.remove('reading');
+    return;
+  }
+  app.classList.add('reading');
+  const list = visible(), i = list.findIndex(x => x.slug === p.slug);
+  const starred = starSet.has(p.slug);
+  paneEl.innerHTML = `
+    <div class="toolbar">
+      <button class="tool back" data-back aria-label="Back to list">${svg(ico.back)}</button>
+      <button class="tool ${starred ? 'on' : ''}" data-toggle-star aria-label="Star">${svg(ico.star, starred ? 'currentColor' : 'none')}</button>
+      <button class="tool" data-unread aria-label="Mark unread">${svg(ico.mail)}</button>
+      <button class="tool" data-copy aria-label="Copy link">${svg(ico.link)}</button>
+      <span class="spacer"></span>
+      <span class="pos">${i + 1} of ${list.length}</span>
+      <button class="tool" data-prev aria-label="Previous" ${i <= 0 ? 'disabled' : ''}>${svg(ico.up)}</button>
+      <button class="tool" data-next aria-label="Next" ${i >= list.length - 1 ? 'disabled' : ''}>${svg(ico.down)}</button>
+    </div>
+    <article class="pane-inner">
+      <header class="meta">
+        <h2>${p.subject}</h2>
+        <div class="byline">
+          <span class="avatar sm">${initials(p.from)}</span>
+          <span>
+            <span class="who">${p.from}</span>
+            <div class="when">${p.when.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} · ${p.folder}</div>
+          </span>
+        </div>
+      </header>
+      <div class="body">${p.html}</div>
+    </article>
+    <div class="reply">
+      <p>Replies land in my actual inbox. I read all of them.</p>
+      <a href="mailto:${AUTHOR.email}?subject=${encodeURIComponent('Re: ' + p.subject)}">Reply</a>
+    </div>`;
+  paneEl.scrollTop = 0;
+}
+
+/* ═══════════ actions ═══════════ */
+function open(slug){
+  if (slug){ readSet.add(slug); save(); }
+  location.hash = slug ? '#' + slug : '';
+  if (!slug) route();
+}
+function step(dir){
+  const list = visible();
+  if (!list.length) return;
+  const i = list.findIndex(x => x.slug === current);
+  const next = list[i < 0 ? 0 : Math.min(Math.max(i + dir, 0), list.length - 1)];
+  if (next) open(next.slug);
+}
+function toggleStar(slug){
+  starSet.has(slug) ? starSet.delete(slug) : starSet.add(slug);
+  save(); renderFolders(); renderList(); if (current === slug) renderPane();
+}
+function route(){
+  const slug = decodeURIComponent(location.hash.slice(1));
+  current = POSTS.some(p => p.slug === slug) ? slug : null;
+  if (current){ readSet.add(current); save(); }
+  renderFolders(); renderList(); renderPane();
+}
+
+/* ═══════════ events ═══════════ */
+foldersEl.onclick = e => {
+  const b = e.target.closest('.folder'); if (!b) return;
+  folder = b.dataset.folder; query = ''; $('search').value = '';
+  renderFolders(); renderList();
+};
+notesEl.onclick = e => {
+  const s = e.target.closest('[data-star]');
+  if (s){ e.stopPropagation(); toggleStar(s.dataset.star); return; }
+  const b = e.target.closest('.note'); if (b) open(b.dataset.slug);
+};
+paneEl.onclick = e => {
+  if (e.target.closest('[data-back]')) return open(null);
+  if (e.target.closest('[data-toggle-star]')) return toggleStar(current);
+  if (e.target.closest('[data-prev]')) return step(-1);
+  if (e.target.closest('[data-next]')) return step(1);
+  if (e.target.closest('[data-unread]')){ readSet.delete(current); save(); return open(null); }
+  const c = e.target.closest('[data-copy]');
+  if (c){
+    navigator.clipboard?.writeText(location.href);
+    c.style.color = 'var(--signal)';
+    setTimeout(() => c.style.color = '', 900);
+  }
+};
+$('search').oninput = e => { query = e.target.value.trim(); renderList(); };
+$('clearSearch').onclick = () => { query = ''; $('search').value = ''; $('search').focus(); renderList(); };
+window.onhashchange = route;
+
+document.addEventListener('keydown', e => {
+  const typing = /INPUT|TEXTAREA/.test(e.target.tagName);
+  if (e.key === 'Escape'){
+    $('sheet').classList.remove('open');
+    typing ? e.target.blur() : open(null);
+    return;
+  }
+  if (e.metaKey || e.ctrlKey || typing) return;
+  if (e.key === '/'){ e.preventDefault(); $('search').focus(); }
+  if (e.key === '?'){ $('sheet').classList.toggle('open'); }
+  if (e.key === 'j'){ e.preventDefault(); step(1); }
+  if (e.key === 'k'){ e.preventDefault(); step(-1); }
+  if (e.key === 's' && current) toggleStar(current);
+  if (e.key === 'u' && current){ readSet.delete(current); save(); open(null); }
+});
+$('sheet').onclick = e => { if (e.target.id === 'sheet') e.currentTarget.classList.remove('open'); };
+
+renderChrome(); route();
+</script>
+</body>
+</html>
