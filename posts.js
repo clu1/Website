@@ -16,7 +16,7 @@ const NOTES = [
 {
   subject: "How AI changes the shape of a venture portfolio",
   date: "2026-08-30",
-  folder: "Venture",
+  folder: "Bits & Pieces",
   body: `
 Seed rounds are getting smaller and the companies raising them are getting further along. That combination breaks a few assumptions reserve models were built on.
 
@@ -41,7 +41,7 @@ None of these are new questions. The timelines for answering them just got short
 {
   subject: "Seat-based pricing is quietly on the way out",
   date: "2026-08-11",
-  folder: "Markets",
+  folder: "Bits & Pieces",
   body: `
 If the software does the work instead of helping a person do the work, you can't keep charging per person.
 
@@ -56,7 +56,7 @@ Net revenue retention stops being comparable across the cohort. A consumption-le
 {
   subject: "What I actually learned from 40 diligence calls",
   date: "2026-07-19",
-  folder: "Venture",
+  folder: "Bits & Pieces",
   body: `
 Reference calls are mostly theater until you change one thing: stop asking whether they like the product and start asking what they would do if it disappeared tomorrow.
 
@@ -73,7 +73,7 @@ The good answers are specific and slightly annoyed. The bad answers are warm and
 {
   subject: "Reading list — August",
   date: "2026-07-02",
-  folder: "Reading",
+  folder: "Bits & Pieces",
   body: `
 Five things worth the time this month, plus one I gave up on halfway through and don't regret.
 
@@ -86,11 +86,11 @@ Five things worth the time this month, plus one I gave up on halfway through and
 {
   subject: "A note on why this site looks like an inbox",
   date: "2026-05-14",
-  folder: "Meta",
+  folder: "Genesis",
   body: `
-Because that's how I actually read. Long things arrive, sit unread for a week, and either get opened or archived.
+Because that's how I actually read and process. Newsletters arrive, sit unread for a while, and then either get opened or archived.
 
-A blog index is a storefront. An inbox is a queue. The second one is more honest about what reading is like.
+My inbox is where I stay organized — work and personal both. So this felt like an honest way to show the bits and pieces of how I see the world.
 `
 }
 
@@ -99,10 +99,10 @@ A blog index is a storefront. An inbox is a queue. The second one is more honest
 // Your details — used for the avatar, the byline, and the reply button.
 const AUTHOR = {
   name: "Carolyn Lu",
-  tagline: "Notes on venture & software",
-  email: "you@example.com",
+  tagline: "Bits & Pieces",
+  email: "ccarolyn.lu@gmail.com",
   links: [
     { label: "LinkedIn", href: "https://linkedin.com/in/carolyn-lu" },
-    { label: "Email", href: "mailto:you@example.com" }
+    { label: "Email", href: "mailto:ccarolyn.lu@gmail.com" }
   ]
 };
