@@ -74,7 +74,7 @@ The useful read isn't that the labs are in trouble. It's that the skill of *serv
   body: `
 My inbox is where I stay organized — work and personal both. So this felt like an honest way to show the bits and pieces of how I see the world.
 `
-}
+},
 
 {
   subject: "About Me",
