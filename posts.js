@@ -74,13 +74,13 @@ The useful read isn't that the labs are in trouble. It's that the skill of *serv
   body: `
 ## The accuracy argument is mostly over
 
-For two years, the pitch for a frontier lab was simple: our model is better, so pay us. That's getting harder to say with a straight face.
+For two years, the pitch for a frontier lab was simple: our model is better, so pay us. That's simply no longer the reality.
 
-[Epoch](https://epoch.ai/data-insights/open-closed-eci-gap) tracks how far behind the open models are, and since January they've been about four months back — one minor version, closer to the difference between GPT-5 and GPT-5.5 than to a generation.
+[Epoch](https://epoch.ai/data-insights/open-closed-eci-gap) tracks how far behind the open models are, and since January they've been about four months back — closer to the difference between GPT-5 and GPT-5.5 vs. a generation apart.
 
-Almost all of that progress came out of China, and the names are worth knowing. Moonshot's Kimi K3 landed in July and took first place on Arena's frontend coding leaderboard, where developers vote on which model writes better interface code — the first time an open model has led any coding board outright. Z.ai's GLM-5.2 and DeepSeek's V4 are the workhorses underneath it, with Xiaomi's MiMo and MiniMax filling out the cheap end. On [OpenRouter](https://openrouter.ai/rankings), which routes traffic for thousands of developers, Chinese open models went from a rounding error at the end of 2024 to roughly half of everything on the platform by April.
+Almost all of that progress came out of China. Moonshot's Kimi K3 landed in July and took first place on Arena's frontend coding leaderboard. Z.ai's GLM-5.2 and DeepSeek's V4 are the workhorses underneath it, with Xiaomi's MiMo and MiniMax filling out the cheaper end. On [OpenRouter](https://openrouter.ai/rankings), which routes traffic for thousands of developers, Chinese open models went from a rounding error at the end of 2024 to roughly half of everything on the platform by April.
 
-There is still a gap, and it's worth being specific about. Open models aren't worse at thinking. They're worse at knowing things and better at making things up — ask one for a fact it doesn't have and it's much likelier to invent one than Claude or Gemini would be. So keep a frontier model in the loop for anything where being wrong is expensive. There's no reason to run your document classification there.
+There is still a gap, and it's worth being specific about. Open models aren't worse at thinking. They're not as good at knowing things and better at making things up — ask one for a fact it doesn't have and it's much likelier to invent one than Claude or Gemini would be.
 
 One trap worth flagging, because it's new. Open weights are not automatically free anymore. Kimi K3 shipped with a license that lets you download and run it however you like inside your own company, but requires anyone reselling it as a service past $20M in revenue to negotiate terms with Moonshot first. Alibaba and MiniMax are reportedly looking at something similar. If you're buying hosted inference, this is your vendor's problem. If you are the vendor, read it before you price anything.
 
@@ -88,13 +88,13 @@ One trap worth flagging, because it's new. Open weights are not automatically fr
 
 Once you stop believing the closed model is meaningfully smarter, the bill becomes the whole conversation. And once the bill is the conversation, you want control over the model layer instead of renting it by the token.
 
-This usually doesn't mean buying GPUs, which is the part people get wrong. Running a big open model yourself is almost always more expensive than letting someone else run the same model for you, because their hardware stays busy and yours won't. What it actually means is switching to an open model you can tune on your own data, hosted by a company whose entire job is keeping that hardware full.
+This usually doesn't mean buying GPUs, which is the part people get wrong. Running a big open model yourself is almost always more expensive than letting someone else run the same model for you. What it actually means is switching to an open model you can tune on your own data, hosted by a company whose entire job is keeping that hardware full.
 
 That shift is showing up in fundraising. Fireworks raised $1.5B in July at $17.5B, and the detail that matters more than the valuation is that 95% of the tokens it serves come from models customized on a customer's own data. Together raised $800M. [Baseten](https://www.baseten.co) is now valued at $13B.
 
 [Gimlet](https://gimletlabs.ai) is attacking the same cost problem one layer down. Its observation is that a single request isn't one job — the part where the model reads your prompt and the part where it writes the answer stress completely different things about a chip. So Gimlet splits the request and sends each piece to whichever hardware handles it best, mixing GPUs, CPUs and specialized inference chips. Three to ten times the throughput for the same power. The number behind the pitch: most AI hardware sitting in datacenters today is idle 70–85% of the time. They raised $80M in March and $300M more at a $3B valuation in early September.
 
-## My read: these companies aren't staying inference companies
+## Inference companies are expanding their surface areas to own more of the stack
 
 An agent does the same three things over and over. It asks a model what to do, runs the resulting code somewhere, and — in the good version — gets a little better next time because of how that went.
 
@@ -104,11 +104,11 @@ The inference companies are buying their way into all of them.
 
 Baseten is the clearest example, and the order tells you it wasn't opportunistic. In December it bought Parsed, a startup that takes a record of how an agent performed and uses it to retrain the model — the last stage. Then in September, it bought Blaxel, which runs the secure environments where agent code actually executes — the second stage. Both after raising at $13B. The point of owning both ends is that the record of what the agent did lands in the same place the training job reads from, so improving the model stops being a separate project.
 
-[Modal](https://modal.com) got to the same place by building rather than buying, and it has the more convincing number. When it raised $355M this spring, it disclosed that execution environments alone — just that second stage — already account for more than a third of its revenue.
+[Modal](https://modal.com) got to the same place by building rather than buying, and it has the more convincing number. When it raised $355M this spring, it disclosed that execution environments / sandbox alone — just that second stage — already account for more than a third of its revenue.
 
-This is why cheap tokens don't scare them. If you sell tokens, prices falling is a problem. If you sell the loop the tokens run inside, prices falling just frees up your customer's budget for the rest of what you charge for.
+This is why cheap tokens aren't the deal breaker here. If you sell tokens, prices falling is a problem. If you sell the loop the tokens run inside, prices falling just frees up your customer's budget for the rest of what you charge for.
 
-One thing that could break this. The appealing version of the story is that these platforms accumulate data from millions of agent runs and get permanently smarter. I don't think that's quite right. Baseten's customers include Abridge, which handles clinical documentation, and Blaxel sells on the promise that customer data stays walled off and stays put. Those customers will not let their records train anything shared. The narrower version still works: you win that business because the data is already sitting on your infrastructure and nobody wants to move it. That's convenience, not a moat.
+One thing that could break this. The appealing version of the story is that these platforms accumulate data from millions of agent runs and get permanently smarter. However, Baseten's customers include Abridge, which handles clinical documentation, and Blaxel sells on the promise that customer data stays walled off and stays put. Those customers will not let their records train anything shared and data privacy will always be a point of contention. The inference companies still win by owning more of the stack when the data is already sitting on their infrastructure and environment.
 `
 },
 
